@@ -1,25 +1,25 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Sidebar_DTO } from "@/dto/sidebar.dto";
 
+/** Sidebar List */
 export const SidebarList = ({ isOpen }: { isOpen?: unknown }) => {
-  const Router = useRouter();
-  const investorSidebarData = useMemo(() => Sidebar_DTO(Router), [Router]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const investorSidebarData = useMemo(() => Sidebar_DTO(router), [router]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  // Retrieve activeIndex from localStorage when the component mounts
+  // Determine the active index based on the current route
   useEffect(() => {
-    const savedIndex = localStorage.getItem("activeSidebarIndex");
-    if (savedIndex !== null) {
-      setActiveIndex(parseInt(savedIndex, 10));
-    }
-  }, []);
+    const activeItemIndex = investorSidebarData.findIndex(
+      (item) => item.routePath === pathname // Compare with routePath
+    );
+    setActiveIndex(activeItemIndex !== -1 ? activeItemIndex : null);
+  }, [pathname, investorSidebarData]);
 
   const handleClick = (index: number, route?: () => void) => {
     setActiveIndex(index);
-    // Save the index to localStorage
-    localStorage.setItem("activeSidebarIndex", index.toString());
     if (route) {
       route();
     }
@@ -32,22 +32,25 @@ export const SidebarList = ({ isOpen }: { isOpen?: unknown }) => {
         {investorSidebarData.map((item, index) => (
           <div
             key={index}
-            className={`flex items-center p-2 mt-2 mx-[16px] TabletScreen:hidden MobileScreen:hidden hover:bg-[#D4F7E4] hover:text-[#199B6C] rounded-md cursor-pointer ${
+            className={`lg:flex items-center py-3 mt-2 pl-[30px] hidden rounded cursor-pointer ${
               activeIndex === index
-                ? "bg-[#D4F7E4] text-[#199B6C] font-[500]"
-                : "hover:bg-[#D4F7E4] hover:text-[#199B6C]"
+                ? `relative flex items-center rounded-xl py-3 text-[15px] font-medium transition-colors
+                  text-[#232323] before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:rounded-r-md before:bg-black`
+                : "hover:bg-gray-100 text-gray-400 hover:text-[#232323] rounded-md"
             }`}
             onClick={() => handleClick(index, item.route)}
           >
             <Image
-              className="hover:text-[#199B6C]"
+              className={`w-[20px] h-[20px] ${
+                activeIndex === index ? "opacity-100" : "opacity-50"
+              }`}
               src={item.Icon}
               alt={item.text}
             />
             <span
               className={`ml-4 ${
                 !isOpen && "hidden"
-              } font-[400] hover:font-[500] text-[16px] leading-[19.09px] group-hover:block select-none`}
+              } font-[500] font-inter text-[15px] leading-[21.78px] group-hover:block select-none`}
             >
               {item.text}
             </span>
@@ -57,54 +60,29 @@ export const SidebarList = ({ isOpen }: { isOpen?: unknown }) => {
     );
   };
 
-  /** Tablet View */
-  const tabletView = () => {
+  /** Tablet and Mobile View */
+  const tabletMobileView = () => {
     return (
       <>
         {investorSidebarData.map((item, index) => (
           <div
             key={index}
-            className={`flex items-center p-2 mt-2 mx-[16px] lg:hidden MobileScreen:hidden hover:bg-[#D4F7E4] hover:text-[#199B6C]  rounded-md cursor-pointer ${
+            className={`flex items-center py-2 pl-[30px] mt-2 lg:hidden rounded cursor-pointer ${
               activeIndex === index
-                ? "bg-[#D4F7E4] text-[#199B6C] font-[500]"
-                : "hover:bg-[#D4F7E4] hover:text-[#199B6C]"
+                ? `relative flex items-center py-2 rounded-xl text-[15px] font-medium transition-colors
+                  text-[#232323] before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:rounded-r-md before:bg-black`
+                : "hover:bg-gray-100 text-gray-400 hover:text-[#232323] rounded-md"
             }`}
             onClick={() => handleClick(index, item.route)}
           >
             <Image
-              className="hover:text-[#199B6C]"
+              className={`w-[20px] h-[20px] ${
+                activeIndex === index ? "opacity-100" : "opacity-50"
+              }`}
               src={item.Icon}
               alt={item.text}
-            ></Image>
-            <span className="ml-4 font-[400] hover:font-[500] text-[16px] leading-[19.09px] group-hover:block select-none">
-              {item.text}
-            </span>
-          </div>
-        ))}
-      </>
-    );
-  };
-
-  /** Mobile View */
-  const mobileView = () => {
-    return (
-      <>
-        {investorSidebarData.map((item, index) => (
-          <div
-            key={index}
-            className={`flex items-center p-2 mt-2 mx-[16px] hidden TabletScreen:hidden hover:bg-[#D4F7E4] hover:text-[#199B6C]  rounded-md cursor-pointer ${
-              activeIndex === index
-                ? "bg-[#D4F7E4] text-[#199B6C] font-[500]"
-                : "hover:bg-[#D4F7E4] hover:text-[#199B6C]"
-            }`}
-            onClick={() => handleClick(index, item.route)}
-          >
-            <Image
-              className="hover:text-[#199B6C]"
-              src={item.Icon}
-              alt={item.text}
-            ></Image>
-            <span className="ml-4 font-[400] hover:font-[500] text-[16px] leading-[19.09px] group-hover:block select-none">
+            />
+            <span className="ml-4 font-[500] font-inter text-[15px] leading-[21.78px] group-hover:block select-none">
               {item.text}
             </span>
           </div>
@@ -116,8 +94,7 @@ export const SidebarList = ({ isOpen }: { isOpen?: unknown }) => {
   return (
     <section>
       {desktopView()}
-      {tabletView()}
-      {mobileView()}
+      {tabletMobileView()}
     </section>
   );
 };

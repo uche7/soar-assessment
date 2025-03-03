@@ -7,7 +7,7 @@ function OverviewSection({ toggleSidebar }: { toggleSidebar: () => void }) {
   return (
     <section>
       <div className="sticky top-0 z-[1000]">
-        <Navigation toggleSidebar={toggleSidebar} />
+        <Navigation navTitle="Overview" toggleSidebar={toggleSidebar} />
       </div>
       <div>
         <Overview />

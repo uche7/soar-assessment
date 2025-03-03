@@ -3,3 +3,9 @@
 body {
   font-family: "inter";
 }
+
+.element {
+  border-top-left-radius: -20px;
+  border-bottom-left-radius: -20px;
+  border-left: 4px solid #232323;
+}

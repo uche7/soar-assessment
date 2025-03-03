@@ -17,7 +17,6 @@ export const Sidebar = ({
   const [isOpen, setIsOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -42,20 +41,23 @@ export const Sidebar = ({
     return (
       <div
         className={`min-h-screen ${
-          isOpen ? "w-[260px]" : "w-20"
-        } TabletScreen:hidden MobileScreen:hidden transition-all duration-300 border-r-[1px] border-[#E4E7EC]`}
+          isOpen ? "w-[250px]" : "w-20"
+        } hidden lg:block transition-all duration-300 shadow`}
       >
-        <div className="relative flex items-center justify-between p-[40px]">
+        <div className="relative flex items-center gap-[10px] py-[31px] pl-[30px] ">
           <Image
-            className={`text-xl cursor-pointer text-green-600 ${
+            className={`text-xl cursor-pointer w-[30px] ${
               !isOpen && "hidden md:block"
             }`}
             src={CheckBookIcon}
             alt={"Check Book Icon"}
             onClick={() => router.push(DashboardNonAuthRoutes.dashboard)}
           />
+          <h3 className="font-[800] text-[#343C6A] text-[25px] leading-[30.26px]">
+            Soar Task
+          </h3>
         </div>
-        <aside className="mt-[65.43px]" onClick={() => setIsOpen(true)}>
+        <aside className="mt-[20px]" onClick={() => setIsOpen(true)}>
           <SidebarList isOpen={isOpen} />
         </aside>
       </div>
@@ -69,17 +71,20 @@ export const Sidebar = ({
         {openMenu && (
           <div
             ref={sidebarRef}
-            className="min-h-screen w-[260px] z-[2000] absolute bg-white hidden  transition-all duration-300 border-r-[1px] border-[#E4E7EC]"
+            className="lg:hidden min-h-screen w-[260px] z-[5000] absolute bg-white transition-all duration-300 border-r-[1px] border-[#E4E7EC]"
           >
-            <div className="relative flex flex-col p-[40px]">
+            <div className="relative flex flex-row gap-2 p-[20px]">
               <Image
-                className="text-xl cursor-pointer text-green-600"
+                className="text-xl cursor-pointer"
                 src={CheckBookIcon}
                 alt={"Check Book Icon"}
                 onClick={() => router.push(DashboardNonAuthRoutes.dashboard)}
               />
+              <h3 className="font-[800] text-[#343C6A] text-[25px] leading-[30.26px]">
+                Soar Task
+              </h3>
             </div>
-            <aside className="mt-[65.43px]">
+            <aside className="mt-[10px]">
               <SidebarList />
             </aside>
           </div>

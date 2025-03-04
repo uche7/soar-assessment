@@ -68,6 +68,7 @@ export const Navigation = ({
             className="w-[35px] h-[35px] cursor-pointer"
             src={Profile_Pic}
             alt={"Profile Pic"}
+            onClick={() => Router.push(DashboardNonAuthRoutes.setting)}
           />
         </div>
         <SearchBar

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import CheckBookIcon from "@/assets/icons/check-book.svg";
-import { DashboardNonAuthRoutes } from "@/utils/urls";
 import { SidebarList } from "./sidebar-list";
+import { DashboardNonAuthRoutes } from "@/utils/urls";
+import CheckBookIcon from "@/assets/icons/check-book.svg";
 
 /** Dashboard SideBar */
 export const Sidebar = ({
@@ -40,7 +40,7 @@ export const Sidebar = ({
   const desktopView = () => {
     return (
       <div
-        className={`min-h-screen ${
+        className={`min-h-screen bg-white ${
           isOpen ? "w-[250px]" : "w-20"
         } hidden lg:block transition-all duration-300 shadow`}
       >

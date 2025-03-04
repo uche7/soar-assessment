@@ -54,7 +54,7 @@ export function NotFoundPage() {
         whileTap="tap"
         onClick={() => router.push("/")}
       >
-        Go to Homepage
+        Go to Home
         <motion.span
           variants={arrowVariants}
           initial="initial"

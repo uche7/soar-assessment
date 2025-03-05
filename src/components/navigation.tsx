@@ -22,7 +22,7 @@ export const Navigation = ({
   /** Desktop View */
   const desktopView = () => {
     return (
-      <div className="hidden lg:flex bg-[#FFFFFF] flex flex-row justify-between items-center border-gray-100 border-l-1 shadow px-[30px] pt-[25px] pb-[15px]">
+      <div className="hidden lg:flex bg-[#FFFFFF] flex-row justify-between items-center border-gray-100 border-l-1 shadow px-[30px] pt-[25px] pb-[15px]">
         <h3 className="font-[600] text-[#343C6A] text-[28px] leading-[33.89px]">
           {navTitle}
         </h3>

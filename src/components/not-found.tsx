@@ -30,7 +30,7 @@ export function NotFoundPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center bg-gray-50 text-center font-sans py-8">
+    <div className="flex flex-col justify-center items-center text-center font-sans py-8">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -40,7 +40,7 @@ export function NotFoundPage() {
         <p className="font-[600] text-2xl text-gray-600 mt-4">
           Oops! Page not found
         </p>
-        <p className="text-md text-gray-500 mt-2">
+        <p className="text-md text-wrap text-gray-500 mt-2">
           The page you are looking for might have been removed, had <br /> its
           name changed, or is temporarily unavailable.
         </p>

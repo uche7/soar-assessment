@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Lato } from "next/font/google";
+import ClientProvider from "@/components/ClientProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,7 +31,7 @@ export default function RootLayout({
         className={`${inter.variable} ${lato.variable}
          bg-[#FFFFFF] lg:bg-[#f5f7fa] antialiased`}
       >
-        {children}
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );

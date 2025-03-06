@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -11,28 +11,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./validation-schema";
 import Profile_Pic from "@/assets/images/profile-pic.svg";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../redux/store";
+import {
+  setProfileImage,
+  setIsSaving,
+  toggleShowPassword,
+  updateProfile,
+} from "../../../redux/setting/profile-slice";
 
 /** Edit Profile Section */
 const EditProfileSection: React.FC = () => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const { profileImage, isSaving, showPassword, ...formValues } = useSelector(
+    (state: RootState) => state.profile
+  );
 
-  // Default values
-  const defaultValues: FormValues = {
-    yourName: "Charlene Reed",
-    username: "Charlene Reed",
-    email: "charlenereed@gmail.com",
-    password: "********",
-    dateOfBirth: "1990-01-25",
-    presentAddress: "San Jose, California, USA",
-    permanentAddress: "San Jose, California, USA",
-    city: "San Jose",
-    postalCode: "45962",
-    country: "USA",
-  };
-
-  // Initialize React Hook Form
   const {
     register,
     handleSubmit,
@@ -42,55 +36,45 @@ const EditProfileSection: React.FC = () => {
     trigger,
   } = useForm<FormValues>({
     resolver: yupResolver(validationSchema),
-    defaultValues,
+    defaultValues: formValues,
   });
 
-  // Load saved data from localStorage on mount
+  // Load saved data from localStorage on mount and update Redux
   useEffect(() => {
     const savedData = localStorage.getItem("userProfile");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      setProfileImage(parsedData.profileImage || Profile_Pic);
-      reset({
-        yourName: parsedData.yourName || defaultValues.yourName,
-        username: parsedData.username || defaultValues.username,
-        email: parsedData.email || defaultValues.email,
-        password: parsedData.password || defaultValues.password,
-        dateOfBirth: parsedData.dateOfBirth || defaultValues.dateOfBirth,
-        presentAddress:
-          parsedData.presentAddress || defaultValues.presentAddress,
-        permanentAddress:
-          parsedData.permanentAddress || defaultValues.permanentAddress,
-        city: parsedData.city || defaultValues.city,
-        postalCode: parsedData.postalCode || defaultValues.postalCode,
-        country: parsedData.country || defaultValues.country,
-      });
+      dispatch(setProfileImage(parsedData.profileImage || Profile_Pic));
+      dispatch(
+        updateProfile({
+          yourName: parsedData.yourName,
+          username: parsedData.username,
+          email: parsedData.email,
+          password: parsedData.password,
+          dateOfBirth: parsedData.dateOfBirth,
+          presentAddress: parsedData.presentAddress,
+          permanentAddress: parsedData.permanentAddress,
+          city: parsedData.city,
+          postalCode: parsedData.postalCode,
+          country: parsedData.country,
+        })
+      );
+      reset(parsedData); // Sync form with loaded data
+    } else {
+      dispatch(setProfileImage(Profile_Pic)); // Set default image if no saved data
     }
-  }, [
-    defaultValues.city,
-    defaultValues.country,
-    defaultValues.dateOfBirth,
-    defaultValues.email,
-    defaultValues.password,
-    defaultValues.permanentAddress,
-    defaultValues.postalCode,
-    defaultValues.presentAddress,
-    defaultValues.username,
-    defaultValues.yourName,
-    reset,
-  ]);
+  }, [dispatch, reset]);
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-  // Enhanced button animations
   const buttonVariants = {
     hover: {
       scale: 1.05,
       boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
-      backgroundColor: "#1a1a1a", // Slightly lighter on hover
+      backgroundColor: "#1a1a1a",
       transition: { duration: 0.3, ease: "easeInOut" },
     },
     tap: {
@@ -99,12 +83,11 @@ const EditProfileSection: React.FC = () => {
       transition: { duration: 0.2 },
     },
     loading: {
-      scale: [1, 1.05, 1], // Pulse effect
+      scale: [1, 1.05, 1],
       transition: { repeat: Infinity, duration: 0.8 },
     },
   };
 
-  // Handle image upload with error handling and file size limit
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -113,13 +96,6 @@ const EditProfileSection: React.FC = () => {
         toast.error("File size exceeds 2MB limit", {
           duration: 3000,
           position: "top-right",
-          style: {
-            background: "#fff",
-            color: "#ff4d4f",
-            border: "1px solid #ff4d4f",
-            borderRadius: "10px",
-            padding: "10px 20px",
-          },
         });
         return;
       }
@@ -128,92 +104,53 @@ const EditProfileSection: React.FC = () => {
       reader.onload = (e) => {
         if (e.target?.result) {
           const result = e.target.result as string;
-          setProfileImage(result);
-          console.log("Loaded image data URL:", result);
-        } else {
-          console.error("Failed to load image data");
+          dispatch(setProfileImage(result));
         }
       };
-      reader.onerror = (e) => console.error("FileReader error:", e);
       reader.readAsDataURL(file);
     }
   };
 
-  // Handle save action with validation and toast notifications
   const handleSave = async () => {
-    setIsSaving(true); // Start loading animation
-    const isValid = await trigger(); // Manually trigger validation
+    dispatch(setIsSaving(true));
+    const isValid = await trigger();
 
     if (!isValid) {
-      setIsSaving(false); // Stop loading animation
+      dispatch(setIsSaving(false));
       toast.error("Please fix the errors in the form", {
         duration: 3000,
         position: "top-right",
-        style: {
-          background: "#fff",
-          color: "#ff4d4f",
-          border: "1px solid #ff4d4f",
-          borderRadius: "10px",
-          padding: "10px 20px",
-        },
       });
       return;
     }
 
     try {
       const values = getValues();
-      const dataToSave = {
-        ...values,
-        profileImage: profileImage || Profile_Pic,
-      };
+      const dataToSave = { ...values, profileImage };
       localStorage.setItem("userProfile", JSON.stringify(dataToSave));
-      console.log("Saved to localStorage:", dataToSave);
-
-      // Show success toast
+      dispatch(updateProfile(values));
       toast.success("Profile saved successfully!", {
         duration: 3000,
         position: "top-right",
-        style: {
-          background: "#fff",
-          color: "#4caf50",
-          border: "1px solid #4caf50",
-          borderRadius: "10px",
-          padding: "10px 20px",
-        },
       });
       window.location.reload();
-    } catch (error) {
-      // Show error toast if saving fails
+    } catch {
       toast.error("Failed to save profile. Please try again.", {
         duration: 3000,
         position: "top-right",
-        style: {
-          background: "#fff",
-          color: "#ff4d4f",
-          border: "1px solid #ff4d4f",
-          borderRadius: "10px",
-          padding: "10px 20px",
-        },
       });
-      console.error("Error saving to localStorage:", error);
     } finally {
-      setIsSaving(false); // Stop loading animation
+      dispatch(setIsSaving(false));
     }
   };
 
-  // Prevent form submission from triggering save unless explicitly handled
   const onSubmit = () => {
     console.log("Form submitted, but saving is handled by the Save button.");
   };
 
-  // Toggle password visibility
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
   return (
     <div>
-      {/* Add Toaster component for toast notifications */}
       <Toaster />
-
       <form
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => {
@@ -234,10 +171,7 @@ const EditProfileSection: React.FC = () => {
               }}
             />
             <label
-              title="Upload"
               htmlFor="imageUpload"
-              aria-label="Upload profile image"
-              tabIndex={0}
               className="absolute bottom-0 right-0 bg-[#232323] rounded-full p-1 cursor-pointer"
             >
               <Image src={EditIcon} alt="Edit Icon" width={24} height={24} />
@@ -260,11 +194,9 @@ const EditProfileSection: React.FC = () => {
               </label>
               <input
                 id="yourName"
-                aria-label="Your Name"
                 {...register("yourName")}
                 type="text"
-                className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+                className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
               />
               {errors.yourName && (
                 <div className="text-red-500 text-xs mt-1">
@@ -281,14 +213,12 @@ const EditProfileSection: React.FC = () => {
               </label>
               <input
                 id="username"
-                aria-label="User Name"
                 {...register("username")}
                 type="text"
-                className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+                className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
               />
               {errors.username && (
-                <div role="alert" className="text-red-500 text-xs mt-1">
+                <div className="text-red-500 text-xs mt-1">
                   {errors.username.message}
                 </div>
               )}
@@ -306,14 +236,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="email"
-              aria-label="Email"
               {...register("email")}
               type="email"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.email && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.email.message}
               </div>
             )}
@@ -328,27 +256,24 @@ const EditProfileSection: React.FC = () => {
             <div className="relative">
               <input
                 id="password"
-                aria-label="Password"
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
-                className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                    text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF] pr-10`}
+                className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF] pr-10"
               />
               <button
                 type="button"
-                onClick={togglePasswordVisibility}
+                onClick={() => dispatch(toggleShowPassword())}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
-                  <AiFillEyeInvisible cursor={"pointer"} size={20} />
+                  <AiFillEyeInvisible size={20} />
                 ) : (
-                  <AiFillEye cursor={"pointer"} size={20} />
+                  <AiFillEye size={20} />
                 )}
               </button>
             </div>
             {errors.password && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.password.message}
               </div>
             )}
@@ -365,14 +290,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="dateOfBirth"
-              aria-label=" Date of Birth"
               {...register("dateOfBirth")}
               type="date"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.dateOfBirth && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.dateOfBirth.message}
               </div>
             )}
@@ -386,14 +309,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="presentAddress"
-              aria-label="Present Address"
               {...register("presentAddress")}
               type="text"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.presentAddress && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.presentAddress.message}
               </div>
             )}
@@ -410,14 +331,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="permanentAddress"
-              aria-label="Permanent Address"
               {...register("permanentAddress")}
               type="text"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.permanentAddress && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.permanentAddress.message}
               </div>
             )}
@@ -431,14 +350,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="city"
-              aria-label="City"
               {...register("city")}
               type="text"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.city && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.city.message}
               </div>
             )}
@@ -455,14 +372,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="postalCode"
-              aria-label="Postal Code"
               {...register("postalCode")}
               type="text"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.postalCode && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.postalCode.message}
               </div>
             )}
@@ -476,14 +391,12 @@ const EditProfileSection: React.FC = () => {
             </label>
             <input
               id="country"
-              aria-label="Country"
               {...register("country")}
               type="text"
-              className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
-                  text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
+              className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.country && (
-              <div role="alert" className="text-red-500 text-xs mt-1">
+              <div className="text-red-500 text-xs mt-1">
                 {errors.country.message}
               </div>
             )}
@@ -492,15 +405,14 @@ const EditProfileSection: React.FC = () => {
 
         <motion.div className="flex justify-end" variants={itemVariants}>
           <motion.button
-            title="Submit"
-            type="button" // Prevents form submission
+            type="button"
             className="px-[74px] py-[14px] bg-[#232323] font-[500] text-[18px] text-white rounded-[15px] leading-[100%] cursor-pointer flex items-center justify-center"
             onClick={handleSave}
             variants={buttonVariants}
             whileHover="hover"
             whileTap="tap"
-            animate={isSaving ? "loading" : undefined} // Apply loading animation when saving
-            disabled={isSaving} // Disable button while saving
+            animate={isSaving ? "loading" : undefined}
+            disabled={isSaving}
           >
             {isSaving ? (
               <span className="flex items-center">

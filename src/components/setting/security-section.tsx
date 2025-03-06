@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -10,15 +10,24 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { validationSchemaSecurity } from "./validation-schema";
 import { PasswordFormValues } from "@/types/password-form-values";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../redux/store";
+import {
+  setIsUpdating,
+  toggleShowNewPassword,
+  toggleShowConfirmPassword,
+  updatePassword,
+  resetSecurity,
+} from "../../../redux/setting/security-slice";
 
 /** Security Section */
 const SecuritySection: React.FC = () => {
   const router = useRouter();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const dispatch = useDispatch();
+  const { isUpdating, showNewPassword, showConfirmPassword } = useSelector(
+    (state: RootState) => state.security
+  );
 
-  // Initialize React Hook Form
   const {
     register,
     handleSubmit,
@@ -38,12 +47,11 @@ const SecuritySection: React.FC = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
   };
 
-  // Enhanced button animations
   const buttonVariants = {
     hover: {
       scale: 1.05,
       boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.2)",
-      backgroundColor: "#e0e0e0", // Lighter gray on hover
+      backgroundColor: "#e0e0e0",
       transition: { duration: 0.3, ease: "easeInOut" },
     },
     tap: {
@@ -52,12 +60,11 @@ const SecuritySection: React.FC = () => {
       transition: { duration: 0.2 },
     },
     loading: {
-      scale: [1, 1.05, 1], // Pulse effect
+      scale: [1, 1.05, 1],
       transition: { repeat: Infinity, duration: 0.8 },
     },
   };
 
-  // Load existing profile data from localStorage on mount
   useEffect(() => {
     const savedData = localStorage.getItem("userProfile");
     if (savedData) {
@@ -66,11 +73,9 @@ const SecuritySection: React.FC = () => {
     }
   }, []);
 
-  // Handle password update
   const handleUpdatePassword = async (data: PasswordFormValues) => {
-    setIsUpdating(true); // Start loading animation
+    dispatch(setIsUpdating(true));
 
-    // Validate the form
     const isValid = await trigger();
     if (!isValid) {
       toast.error("Please fix the errors in the form", {
@@ -84,23 +89,21 @@ const SecuritySection: React.FC = () => {
           padding: "10px 20px",
         },
       });
-      setIsUpdating(false);
+      dispatch(setIsUpdating(false));
       return;
     }
 
-    // Retrieve existing profile data
     const savedData = localStorage.getItem("userProfile");
     const parsedData = savedData ? JSON.parse(savedData) : {};
 
-    // Update password in profile data
     const updatedData = {
       ...parsedData,
-      password: data.newPassword, // Save the new password
+      password: data.newPassword,
     };
 
-    // Save updated data to localStorage
     try {
       localStorage.setItem("userProfile", JSON.stringify(updatedData));
+      dispatch(updatePassword(data.newPassword)); // Store the new password in Redux if needed
       toast.success("Password updated successfully!", {
         duration: 3000,
         position: "top-right",
@@ -112,7 +115,8 @@ const SecuritySection: React.FC = () => {
           padding: "10px 20px",
         },
       });
-      reset(); // To Clear the form
+      reset();
+      dispatch(resetSecurity()); // Reset security state after success
       router.push(DashboardNonAuthRoutes.dashboard);
     } catch (error) {
       toast.error("Failed to update password.", {
@@ -128,15 +132,9 @@ const SecuritySection: React.FC = () => {
       });
       console.error("Error updating password:", error);
     } finally {
-      setIsUpdating(false); // Stop loading animation
+      dispatch(setIsUpdating(false));
     }
   };
-
-  // Toggle password visibility
-  const toggleNewPasswordVisibility = () =>
-    setShowNewPassword(!showNewPassword);
-  const toggleConfirmPasswordVisibility = () =>
-    setShowConfirmPassword(!showConfirmPassword);
 
   return (
     <motion.div
@@ -145,7 +143,6 @@ const SecuritySection: React.FC = () => {
       animate="visible"
       variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
     >
-      {/* Add Toaster for toast notifications */}
       <Toaster />
 
       <motion.div variants={itemVariants}>
@@ -186,7 +183,7 @@ const SecuritySection: React.FC = () => {
             />
             <button
               type="button"
-              onClick={toggleNewPasswordVisibility}
+              onClick={() => dispatch(toggleShowNewPassword())}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               aria-label={showNewPassword ? "Hide password" : "Show password"}
             >
@@ -212,7 +209,7 @@ const SecuritySection: React.FC = () => {
             />
             <button
               type="button"
-              onClick={toggleConfirmPasswordVisibility}
+              onClick={() => dispatch(toggleShowConfirmPassword())}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               aria-label={
                 showConfirmPassword ? "Hide password" : "Show password"

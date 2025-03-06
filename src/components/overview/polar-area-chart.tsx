@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PolarArea } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import ChartSkeletonLoader from "@/library/chart-skeleton-loader";
 
 // Register Chart.js components
 ChartJS.register(
@@ -19,6 +20,8 @@ ChartJS.register(
 );
 
 const PolarAreaChart: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
   // Data for the chart
   const data = {
     labels: ["Entertainment", "Investment", "Expense", "Others"],
@@ -60,8 +63,8 @@ const PolarAreaChart: React.FC = () => {
           const maxValue = Math.max(...(context.dataset.data as number[]));
           const fontSize = 5 + (value / maxValue) * 8; // Adjust scaling factor as needed
           return {
-            size: Math.max(fontSize, 7), // Minimum font size of 10
-            weight: 'bold' as const,
+            size: Math.max(fontSize, 7), // Minimum font size of 7
+            weight: "bold" as const,
           };
         },
         formatter: (
@@ -84,9 +87,22 @@ const PolarAreaChart: React.FC = () => {
     maintainAspectRatio: false, // Allow custom height and width
   };
 
+  // Simulate loading delay (e.g., fetching data)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Set loading to false after 2 seconds
+    }, 2000);
+
+    return () => clearTimeout(timer); // Cleanup on unmount
+  }, []);
+
   return (
-    <div style={{ width: "100%", height: "300px" }}>
-      <PolarArea data={data} options={options} />
+    <div style={{ width: "100%", height: "300px", position: "relative" }}>
+      {isLoading ? (
+        <ChartSkeletonLoader chartType="pie" width="100%" height="100%" />
+      ) : (
+        <PolarArea data={data} options={options} />
+      )}
     </div>
   );
 };

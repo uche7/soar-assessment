@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigation } from "../navigation";
-import { Setting } from "./setting";
+import Setting from "./setting";
 
 /** Setting Section */
 function SettingSection({ toggleSidebar }: { toggleSidebar: () => void }) {

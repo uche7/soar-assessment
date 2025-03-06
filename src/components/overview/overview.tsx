@@ -1,5 +1,5 @@
 import React from "react";
-import Cards from "./cards";
+import Cards from "../cards";
 import { CardsDTO } from "@/dto/cards.dto";
 import { useRouter } from "next/navigation";
 import PolarAreaChart from "./polar-area-chart";
@@ -7,6 +7,7 @@ import { QuickTransfer } from "./team-payment-ui";
 import { DashboardNonAuthRoutes } from "@/utils/urls";
 import { RecentTransactions } from "./recent-transaction";
 import WeeklyActivityChart from "./weekly-activity-chart";
+import BalanceHistoryChart from "./balance-history-chart";
 import { RecentTransactionsDTO } from "@/dto/recent-transaction";
 
 /** Overview Section */
@@ -43,7 +44,7 @@ export function Overview() {
           </div>
         </div>
         <div>
-          <h2 className="font-[600] text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] -mt-1">
+          <h2 className="font-[600] text-[18px] lg:text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] -mt-1">
             Recent Transactions
           </h2>
           <RecentTransactions transactions={RecentTransactionsDTO} />
@@ -52,13 +53,13 @@ export function Overview() {
 
       <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between lg:items-center">
         <div>
-          <h2 className="font-[600] text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
+          <h2 className="font-[600] text-[18px] lg:text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
             Weekly Activity
           </h2>
           <WeeklyActivityChart />
         </div>
         <div className="lg:ml-5">
-          <h2 className="font-[600] text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
+          <h2 className="font-[600] text-[18px] lg:text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
             Expense Statistics
           </h2>
           <PolarAreaChart />
@@ -66,12 +67,17 @@ export function Overview() {
       </div>
       <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between lg:items-center">
         <div>
-          <h2 className="font-[600] text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
+          <h2 className="font-[600] text-[18px] lg:text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
             Quick Transfer
           </h2>
           <QuickTransfer />
         </div>
-        <div>Fan to be with you</div>
+        <div>
+          <h2 className="font-[600] text-[18px] lg:text-[22px] text-[#343C6A] mb-[22px] md:mb-[18px] leading-[26.63px]">
+            Balance History
+          </h2>
+          <BalanceHistoryChart />
+        </div>
       </div>
     </div>
   );

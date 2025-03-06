@@ -12,6 +12,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import { ChartOptions } from "chart.js";
 import { useEffect, useState } from "react";
+import ChartSkeletonLoader from "@/library/chart-skeleton-loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -116,7 +117,11 @@ const WeeklyActivityChart = () => {
       className="lg:bg-[#FFFFFF] w-full lg:w-[720px] lg:rounded-[25px] lg:p-4"
       style={{ height: "300px" }}
     >
-      {chartData && <Bar data={chartData} options={options} />}
+      {chartData ? (
+        <Bar data={chartData} options={options} />
+      ) : (
+        <ChartSkeletonLoader chartType="bar" width="100%" height="100%" />
+      )}
     </div>
   );
 };

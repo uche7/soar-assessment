@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigation } from "../navigation";
-import { CreditCards } from "./credit-cards";
+import CreditCards from "./credit-cards";
 
 /** Credit Cards Section */
 function CreditCardSection({ toggleSidebar }: { toggleSidebar: () => void }) {

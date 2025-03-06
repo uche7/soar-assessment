@@ -87,6 +87,8 @@ During development, the following assumptions were made:
 
 7. Image Assets: Placeholder SVG icons and images are assumed to exist in /assets/icons/ and /assets/images/. Replaced with actual assets from the Figma design.
 
+8. The Polar Chart design that was done but will not be perfect design with the one on the Figma due to the charts in real scenario only work with percentage and the value equivalent not how it is on figma.
+
 
 ## Deployment
 Live Demo: [[Live Demo](https://soar-assessment-eta.vercel.app/)]

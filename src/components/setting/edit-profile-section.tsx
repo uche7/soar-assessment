@@ -126,7 +126,15 @@ const EditProfileSection: React.FC = () => {
 
     try {
       const values = getValues();
-      const dataToSave = { ...values, profileImage };
+      // Trim all string values before saving
+      const trimmedValues = Object.fromEntries(
+        Object.entries(values).map(([key, value]) => [
+          key,
+          typeof value === "string" ? value.trim() : value,
+        ])
+      );
+
+      const dataToSave = { ...trimmedValues, profileImage };
       localStorage.setItem("userProfile", JSON.stringify(dataToSave));
       dispatch(updateProfile(values));
       toast.success("Profile saved successfully!", {
@@ -196,6 +204,10 @@ const EditProfileSection: React.FC = () => {
                 id="yourName"
                 {...register("yourName")}
                 type="text"
+                onBlur={(e) => {
+                  e.target.value = e.target.value.trim();
+                  trigger("yourName");
+                }}
                 className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
               />
               {errors.yourName && (
@@ -215,6 +227,10 @@ const EditProfileSection: React.FC = () => {
                 id="username"
                 {...register("username")}
                 type="text"
+                onBlur={(e) => {
+                  e.target.value = e.target.value.trim();
+                  trigger("username");
+                }}
                 className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
               />
               {errors.username && (
@@ -238,6 +254,10 @@ const EditProfileSection: React.FC = () => {
               id="email"
               {...register("email")}
               type="email"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("email");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.email && (
@@ -258,6 +278,10 @@ const EditProfileSection: React.FC = () => {
                 id="password"
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
+                onBlur={(e) => {
+                  e.target.value = e.target.value.trim();
+                  trigger("password");
+                }}
                 className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF] pr-10"
               />
               <button
@@ -292,6 +316,10 @@ const EditProfileSection: React.FC = () => {
               id="dateOfBirth"
               {...register("dateOfBirth")}
               type="date"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("dateOfBirth");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.dateOfBirth && (
@@ -311,6 +339,10 @@ const EditProfileSection: React.FC = () => {
               id="presentAddress"
               {...register("presentAddress")}
               type="text"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("presentAddress");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.presentAddress && (
@@ -333,6 +365,10 @@ const EditProfileSection: React.FC = () => {
               id="permanentAddress"
               {...register("permanentAddress")}
               type="text"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("permanentAddress");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.permanentAddress && (
@@ -352,6 +388,10 @@ const EditProfileSection: React.FC = () => {
               id="city"
               {...register("city")}
               type="text"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("city");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.city && (
@@ -374,6 +414,10 @@ const EditProfileSection: React.FC = () => {
               id="postalCode"
               {...register("postalCode")}
               type="text"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("postalCode");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.postalCode && (
@@ -393,6 +437,10 @@ const EditProfileSection: React.FC = () => {
               id="country"
               {...register("country")}
               type="text"
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+                trigger("country");
+              }}
               className="w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF] text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]"
             />
             {errors.country && (

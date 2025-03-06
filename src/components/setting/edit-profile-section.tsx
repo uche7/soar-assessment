@@ -406,7 +406,7 @@ const EditProfileSection: React.FC = () => {
         <motion.div className="flex justify-end" variants={itemVariants}>
           <motion.button
             type="button"
-            className="px-[74px] py-[14px] bg-[#232323] font-[500] text-[18px] text-white rounded-[15px] leading-[100%] cursor-pointer flex items-center justify-center"
+            className="w-full lg:w-[190px] px-[74px] py-[14px] bg-[#232323] font-[500] text-[15px] lg:text-[18px] text-white rounded-[9px] lg:rounded-[15px] leading-[100%] cursor-pointer flex items-center justify-center"
             onClick={handleSave}
             variants={buttonVariants}
             whileHover="hover"

@@ -5,14 +5,14 @@ import { TransactionsProps } from "@/types/recent-transaction";
 /** Recent Transactions Component */
 export function RecentTransactions({ transactions }: TransactionsProps) {
   return (
-    <div className="w-full lg:w-[300px] lg:h-[232px] lg:bg-white lg:rounded-[25px] lg:p-[15px] flex flex-col gap-[10px]">
+    <ul className="w-full lg:w-[300px] lg:h-[232px] lg:bg-white lg:rounded-[25px] lg:p-[15px] flex flex-col gap-[10px]">
       {transactions.map((transaction) => (
-        <div key={transaction.id} className="flex justify-between items-center">
+        <li key={transaction.id} className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Image
               className="w-[55px] h-[55px]"
               src={transaction.icon}
-              alt={"Icons"}
+              alt={`${transaction.title} icon`}
             />
             <div>
               <p className="font-[500] text-[13.5px] text-[#232323]">
@@ -32,8 +32,8 @@ export function RecentTransactions({ transactions }: TransactionsProps) {
           >
             {transaction.type === "deposit" ? "+" : "-"}${transaction.amount}
           </p>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

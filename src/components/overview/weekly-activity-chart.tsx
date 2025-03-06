@@ -115,6 +115,8 @@ const WeeklyActivityChart = () => {
   return (
     <div
       className="lg:bg-[#FFFFFF] w-full lg:w-[720px] lg:rounded-[25px] lg:p-4"
+      role="img"
+      aria-label="Weekly Activity Chart showing trends in spending."
       style={{ height: "300px" }}
     >
       {chartData ? (

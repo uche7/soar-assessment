@@ -19,6 +19,7 @@ ChartJS.register(
   ChartDataLabels
 );
 
+/** Polar Area Chart */
 const PolarAreaChart: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
@@ -101,7 +102,11 @@ const PolarAreaChart: React.FC = () => {
       {isLoading ? (
         <ChartSkeletonLoader chartType="pie" width="100%" height="100%" />
       ) : (
-        <PolarArea data={data} options={options} />
+        <PolarArea
+          data={data}
+          options={options}
+          aria-label="Expense distribution over time."
+        />
       )}
     </div>
   );

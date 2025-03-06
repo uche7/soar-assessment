@@ -236,6 +236,8 @@ const EditProfileSection: React.FC = () => {
             <label
               title="Upload"
               htmlFor="imageUpload"
+              aria-label="Upload profile image"
+              tabIndex={0}
               className="absolute bottom-0 right-0 bg-[#232323] rounded-full p-1 cursor-pointer"
             >
               <Image src={EditIcon} alt="Edit Icon" width={24} height={24} />
@@ -250,10 +252,15 @@ const EditProfileSection: React.FC = () => {
           </motion.div>
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <motion.div variants={itemVariants}>
-              <label className="block font-[400] text-[#232323] text-[13px] lg:text-[16px] mb-[11px] leading-[100%]">
+              <label
+                htmlFor="yourName"
+                className="block font-[400] text-[#232323] text-[13px] lg:text-[16px] mb-[11px] leading-[100%]"
+              >
                 Your Name
               </label>
               <input
+                id="yourName"
+                aria-label="Your Name"
                 {...register("yourName")}
                 type="text"
                 className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
@@ -266,17 +273,22 @@ const EditProfileSection: React.FC = () => {
               )}
             </motion.div>
             <motion.div variants={itemVariants}>
-              <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+              <label
+                htmlFor="username"
+                className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+              >
                 User Name
               </label>
               <input
+                id="username"
+                aria-label="User Name"
                 {...register("username")}
                 type="text"
                 className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
               />
               {errors.username && (
-                <div className="text-red-500 text-xs mt-1">
+                <div role="alert" className="text-red-500 text-xs mt-1">
                   {errors.username.message}
                 </div>
               )}
@@ -286,27 +298,37 @@ const EditProfileSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="email"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Email
             </label>
             <input
+              id="email"
+              aria-label="Email"
               {...register("email")}
               type="email"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.email && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.email.message}
               </div>
             )}
           </motion.div>
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="password"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Password
             </label>
             <div className="relative">
               <input
+                id="password"
+                aria-label="Password"
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
@@ -326,7 +348,7 @@ const EditProfileSection: React.FC = () => {
               </button>
             </div>
             {errors.password && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.password.message}
               </div>
             )}
@@ -335,33 +357,43 @@ const EditProfileSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="dateOfBirth"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Date of Birth
             </label>
             <input
+              id="dateOfBirth"
+              aria-label=" Date of Birth"
               {...register("dateOfBirth")}
               type="date"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.dateOfBirth && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.dateOfBirth.message}
               </div>
             )}
           </motion.div>
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="presentAddress"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Present Address
             </label>
             <input
+              id="presentAddress"
+              aria-label="Present Address"
               {...register("presentAddress")}
               type="text"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.presentAddress && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.presentAddress.message}
               </div>
             )}
@@ -370,33 +402,43 @@ const EditProfileSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="permanentAddress"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Permanent Address
             </label>
             <input
+              id="permanentAddress"
+              aria-label="Permanent Address"
               {...register("permanentAddress")}
               type="text"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.permanentAddress && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.permanentAddress.message}
               </div>
             )}
           </motion.div>
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="city"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               City
             </label>
             <input
+              id="city"
+              aria-label="City"
               {...register("city")}
               type="text"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.city && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.city.message}
               </div>
             )}
@@ -405,33 +447,43 @@ const EditProfileSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="postalCode"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Postal Code
             </label>
             <input
+              id="postalCode"
+              aria-label="Postal Code"
               {...register("postalCode")}
               type="text"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.postalCode && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.postalCode.message}
               </div>
             )}
           </motion.div>
           <motion.div variants={itemVariants}>
-            <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+            <label
+              htmlFor="country"
+              className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+            >
               Country
             </label>
             <input
+              id="country"
+              aria-label="Country"
               {...register("country")}
               type="text"
               className={`w-full py-[13px] lg:py-[16px] px-[15px] lg:px-[20px] border-[1px] border-[#DFEAF2] font-[400] text-[#718EBF]
                   text-[12px] lg:text-[15px] leading-[100%] rounded-[10px] lg:rounded-[15px] focus:outline-none focus:ring-2 focus:ring-[#718EBF]`}
             />
             {errors.country && (
-              <div className="text-red-500 text-xs mt-1">
+              <div role="alert" className="text-red-500 text-xs mt-1">
                 {errors.country.message}
               </div>
             )}

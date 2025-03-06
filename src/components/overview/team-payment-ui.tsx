@@ -236,6 +236,7 @@ export const QuickTransfer = () => {
                 whileTap="tap"
                 onClick={handleSendClick}
                 disabled={isSent || isLoading}
+                aria-label="Send amount"
               >
                 {/* Send State */}
                 <motion.div

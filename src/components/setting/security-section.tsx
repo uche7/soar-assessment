@@ -149,18 +149,26 @@ const SecuritySection: React.FC = () => {
       <Toaster />
 
       <motion.div variants={itemVariants}>
-        <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+        <label
+          htmlFor="twoFactor"
+          className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+        >
           Two-Factor Authentication
         </label>
         <input
           type="checkbox"
+          id="twoFactor"
+          aria-label="Two-Factor Authentication"
           className="w-5 h-5 border-gray-300 rounded focus:outline-none cursor-pointer"
         />
         <span className="ml-2 text-gray-600">Enable 2FA</span>
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <label className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]">
+        <label
+          htmlFor="changePassword"
+          className="block font-[400] text-[#232323] text-[16px] mb-[11px] leading-[100%]"
+        >
           Change Password
         </label>
         <form
@@ -169,6 +177,7 @@ const SecuritySection: React.FC = () => {
         >
           <div className="relative">
             <input
+              id="changePassword"
               type={showNewPassword ? "text" : "password"}
               {...register("newPassword")}
               placeholder="New Password"

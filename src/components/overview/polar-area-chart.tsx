@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import { PolarArea } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -6,11 +8,14 @@ import {
   ArcElement,
   Tooltip,
   Legend,
+  ChartOptions,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import ChartSkeletonLoader from "@/library/chart-skeleton-loader";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../redux/store";
+import { fetchDashboardData } from "../../../redux/dashboard/dashboard-slice";
 
-// Register Chart.js components
 ChartJS.register(
   RadialLinearScale,
   ArcElement,
@@ -19,52 +24,42 @@ ChartJS.register(
   ChartDataLabels
 );
 
-/** Polar Area Chart */
 const PolarAreaChart: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const dispatch = useDispatch<AppDispatch>();
+  const { polarChartData, loading } = useSelector(
+    (state: RootState) => state.dashboard
+  );
 
-  // Data for the chart
-  const data = {
-    labels: ["Entertainment", "Investment", "Expense", "Others"],
-    datasets: [
-      {
-        label: "Expenses",
-        data: [30, 20, 15, 35], // Values for each segment
-        backgroundColor: ["#343C6A", "#396AFF", "#FC7900", "#232323"], // Segment colors
-        borderColor: "#fff", // White border for segments
-        borderWidth: 5, // Border width
-      },
-    ],
-  };
+  useEffect(() => {
+    dispatch(fetchDashboardData()); // Fetch all dashboard data on mount
+  }, [dispatch]);
 
-  // Chart options
-  const options = {
+  const options: ChartOptions<"polarArea"> = {
     scales: {
       r: {
         grid: {
-          display: false, // Hide radial grid lines
+          display: false,
         },
         ticks: {
-          display: false, // Hide radial ticks
+          display: false,
         },
       },
     },
     plugins: {
       legend: {
-        display: false, // Hide the legend
+        display: false,
       },
       tooltip: {
-        enabled: true, // Enable tooltips
+        enabled: true,
       },
       datalabels: {
         color: "#fff",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        font: (context: any) => {
-          const value = context.dataset.data[context.dataIndex] as number;
+        font: (context) => {
+          const value = context.dataset.data[context.dataIndex] as number; // Cast to number since data is number[]
           const maxValue = Math.max(...(context.dataset.data as number[]));
-          const fontSize = 5 + (value / maxValue) * 8; // Adjust scaling factor as needed
+          const fontSize = 5 + (value / maxValue) * 8;
           return {
-            size: Math.max(fontSize, 7), // Minimum font size of 7
+            size: Math.max(fontSize, 7),
             weight: "bold" as const,
           };
         },
@@ -80,30 +75,21 @@ const PolarAreaChart: React.FC = () => {
           ] as string;
           return `${value}%\n${label}`;
         },
-        align: "center" as const, // Center the text horizontally
-        anchor: "center" as const, // Center the text vertically
+        align: "center" as const,
+        anchor: "center" as const,
       },
     },
-    responsive: true, // Make the chart responsive
-    maintainAspectRatio: false, // Allow custom height and width
+    responsive: true,
+    maintainAspectRatio: false,
   };
-
-  // Simulate loading delay (e.g., fetching data)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false); // Set loading to false after 2 seconds
-    }, 2000);
-
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
 
   return (
     <div style={{ width: "100%", height: "300px", position: "relative" }}>
-      {isLoading ? (
+      {loading || !polarChartData ? (
         <ChartSkeletonLoader chartType="pie" width="100%" height="100%" />
       ) : (
         <PolarArea
-          data={data}
+          data={polarChartData}
           options={options}
           aria-label="Expense distribution over time."
         />

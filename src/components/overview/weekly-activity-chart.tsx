@@ -11,60 +11,41 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { ChartOptions } from "chart.js";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../redux/store";
+import { fetchDashboardData } from "../../../redux/dashboard/dashboard-slice";
 import ChartSkeletonLoader from "@/library/chart-skeleton-loader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-/** Weekly Activity Chart */
 const WeeklyActivityChart = () => {
-  const [chartData, setChartData] = useState<ChartData<"bar"> | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const { weeklyChartData, loading } = useSelector(
+    (state: RootState) => state.dashboard
+  );
 
-  // Function to get bar thickness based on screen width
   const getBarThickness = () => {
     if (typeof window !== "undefined") {
-      return window.innerWidth < 480 ? 10 : 15; // 10 for mobile, 15 for larger screens
+      return window.innerWidth < 480 ? 10 : 15;
     }
-    return 15; // Default value
+    return 15;
   };
 
   useEffect(() => {
-    // Dummy data based on the image description
-    const dummyData = {
-      labels: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"],
-      datasets: [
-        {
-          label: "Deposit",
-          data: [200, 150, 250, 400, 300, 200, 350],
-          backgroundColor: "rgb(59, 130, 246)", // Tailwind blue-500
-          borderRadius: 20,
-          borderSkipped: false,
-          barThickness: getBarThickness(), // Dynamic bar thickness
-          offset: 10,
-        },
-        {
-          label: "",
-          data: [0, 0, 0, 0, 0, 0, 0],
-          backgroundColor: "rgba(0, 0, 0, 0)", // Transparent bar
-          barThickness: 5,
-        },
-        {
-          label: "Withdraw",
-          data: [500, 300, 400, 450, 200, 350, 400],
-          backgroundColor: "rgb(17, 24, 39)", // Tailwind gray-900
-          borderRadius: 20,
-          borderSkipped: false,
-          barThickness: getBarThickness(), // Dynamic bar thickness
-          offset: 5,
-        },
-      ],
-    };
+    dispatch(fetchDashboardData());
+  }, [dispatch]);
 
-    // Simulate a delay to mimic an async operation
-    setTimeout(() => {
-      setChartData(dummyData);
-    }, 1000);
-  }, []);
+  const chartDataWithDynamicThickness: ChartData<"bar"> | null = weeklyChartData
+    ? {
+        ...weeklyChartData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        datasets: weeklyChartData.datasets.map((dataset: any) => ({
+          ...dataset,
+          barThickness: dataset.label === "" ? 5 : getBarThickness(),
+        })),
+      }
+    : null;
 
   const options: ChartOptions<"bar"> = {
     responsive: true,
@@ -77,11 +58,11 @@ const WeeklyActivityChart = () => {
           usePointStyle: true,
           pointStyle: "circle",
           padding: 10,
-          color: "#718EBF", // Legend text color
+          color: "#718EBF",
         },
       },
       datalabels: {
-        display: false, // Explicitly disable datalabels
+        display: false,
       },
     },
     layout: {
@@ -96,17 +77,17 @@ const WeeklyActivityChart = () => {
           drawOnChartArea: false,
         },
         ticks: {
-          color: "#718EBF", // X-axis text color
+          color: "#718EBF",
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
           stepSize: 100,
-          color: "#718EBF", // Y-axis text color
+          color: "#718EBF",
         },
         grid: {
-          color: "#E2E8F0", // Light gray grid lines
+          color: "#E2E8F0",
         },
       },
     },
@@ -119,10 +100,10 @@ const WeeklyActivityChart = () => {
       aria-label="Weekly Activity Chart showing trends in spending."
       style={{ height: "300px" }}
     >
-      {chartData ? (
-        <Bar data={chartData} options={options} />
-      ) : (
+      {loading || !chartDataWithDynamicThickness ? (
         <ChartSkeletonLoader chartType="bar" width="100%" height="100%" />
+      ) : (
+        <Bar data={chartDataWithDynamicThickness} options={options} />
       )}
     </div>
   );
